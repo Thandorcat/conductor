@@ -1,0 +1,25 @@
+version: '2'
+services:
+  application:
+    build:
+      context: .
+      dockerfile: application.Dockerfile
+  tomcat:
+    build:
+      context: .
+      dockerfile: tomcat.Dockerfile
+    depends_on:
+      - application
+    volumes_from:
+      - application
+  web:
+    build:
+      context: .
+      dockerfile: web.Dockerfile
+    depends_on:
+      - tomcat
+    ports:
+      - "80:80"
+    links:
+      - tomcat
+

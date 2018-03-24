@@ -1,0 +1,15 @@
+project:
+  - space:
+      type: docker
+      tomcat:
+        image: tomcat
+        ports: 
+          - 80:8080
+        mount: 
+          - app:/usr/local/tomcat/webapps
+      database:
+        dockerfile: database
+  - space:
+      type: docker-compose
+
+
