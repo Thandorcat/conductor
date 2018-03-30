@@ -1,6 +1,7 @@
 project:
   - space:
       type: docker
+      location: local
       tomcat:
         image: tomcat
         ports: 
@@ -8,8 +9,20 @@ project:
         mount: 
           - app:/usr/local/tomcat/webapps
       database:
-        dockerfile: database
+        dockerfile: ./database
+      monitoring:
+        docker-compose: ./monitoring
   - space:
-      type: docker-compose
+      type: machine
+      location: 192.168.1.10
+      nginx:
+        bash: "sudo apt-get install nginx"
+  - space:
+      type: vagrant
+      location: local
+      jenkins:
+        vagrantfile: ./jenkins
+
+
 
 
