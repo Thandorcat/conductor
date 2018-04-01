@@ -1,28 +1,11 @@
+name: mmm.com
 project:
   - space:
-      type: docker
+      provider: docker
       location: local
       tomcat:
         image: tomcat
-        ports: 
-          - 80:8080
-        mount: 
+        ports: # reversed order
+          - 8080: 8080
+        mount: # !!!!!!!
           - app:/usr/local/tomcat/webapps
-      database:
-        dockerfile: ./database
-      monitoring:
-        docker-compose: ./monitoring
-  - space:
-      type: machine
-      location: 192.168.1.10
-      nginx:
-        bash: "sudo apt-get install nginx"
-  - space:
-      type: vagrant
-      location: local
-      jenkins:
-        vagrantfile: ./jenkins
-
-
-
-
