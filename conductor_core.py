@@ -1,7 +1,7 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-class Serv(BaseHTTPRequestHandler):
+class Conductor_Core(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == '/':
@@ -16,5 +16,5 @@ class Serv(BaseHTTPRequestHandler):
         self.wfile.write(bytes(file_to_open, 'utf-8'))
 
 
-httpd = HTTPServer(('localhost', 8080), Serv)
+httpd = HTTPServer(('localhost', 8080), Conductor_Core)
 httpd.serve_forever()

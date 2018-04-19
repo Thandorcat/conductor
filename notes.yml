@@ -1,11 +1,15 @@
-name: mmm.com
 project:
   - space:
-      provider: docker
-      location: local
+      type: docker
       tomcat:
         image: tomcat
-        ports: # reversed order
-          - 8080: 8080
-        mount: # !!!!!!!
+        ports: 
+          - 80:8080
+        mount: 
           - app:/usr/local/tomcat/webapps
+      database:
+        dockerfile: database
+  - space:
+      type: docker-compose 
+
+
