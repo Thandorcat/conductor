@@ -3,8 +3,7 @@ import socket
 import json
 
 import yaml
-import importlib
-from properties import PROVIDERS_DIR
+
 
 class Conductor_CLI:
 
