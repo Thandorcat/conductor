@@ -10,6 +10,4 @@ project:
       database:
         dockerfile: database
   - space:
-      type: docker-compose 
-
-
+      type: docker-compose

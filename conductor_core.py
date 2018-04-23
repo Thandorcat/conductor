@@ -1,20 +1,14 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from flask import Flask, request
+import json
 
+app = Flask(__name__)
+#app.config['SERVER_NAME'] = "0.0.0.0:5900"
+@app.route('/', methods=['POST'])
+def result():
+    json_data = request.json
+    notes = json.loads(json_data)
+    print(notes)
+    return 'Performed!'
 
-class Conductor_Core(BaseHTTPRequestHandler):
-
-    def do_GET(self):
-        if self.path == '/':
-            self.path = '/index.html'
-        try:
-            file_to_open = open(self.path[1:]).read()
-            self.send_response(200)
-        except:
-            file_to_open = "File not found"
-            self.send_response(404)
-        self.end_headers()
-        self.wfile.write(bytes(file_to_open, 'utf-8'))
-
-
-httpd = HTTPServer(('localhost', 8080), Conductor_Core)
-httpd.serve_forever()
+app.debug = True
+app.run(host='0.0.0.0', port=5999)
