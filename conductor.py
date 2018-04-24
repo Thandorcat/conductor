@@ -16,17 +16,12 @@ class Conductor_CLI:
     def play_notes(self, filename):
         stream = open(filename, 'r')
         notes = yaml.load(stream)
-        json_data = json.dumps(notes)
+        message = {'play': notes}
+        json_data = json.dumps(message)
         print(json_data)
         request = requests.post(self.core_url, json=json_data)
         print(request.text)
 
-        # for space in notes["project"]:
-        #     space = list(space.values())[0]  # looks like the most elegant way to get value
-        #     provider = space.pop("provider")
-        #     provider_module_path = PROVIDERS_DIR + '.' + provider
-        #     provider_module = importlib.import_module(provider_module_path)  # import provider as module
-        #     provider_module.run(space)
-
-cli = Conductor_CLI()
-cli.play_notes("notes.yml")
+if __name__ == '__main__':
+    cli = Conductor_CLI()
+    cli.play_notes("notes.yml")
