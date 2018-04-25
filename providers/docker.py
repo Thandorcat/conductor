@@ -11,5 +11,4 @@ def run(options):
         image = service.get("image", None)
         port = (service.get("ports", None))[0]
         print(image)
-        print(type(port))
         client.containers.run(image, detach=True, ports=port)

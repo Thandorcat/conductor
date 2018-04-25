@@ -1,12 +1,14 @@
 from flask import Flask, request, Response
 import json
 import importlib
-from properties import PROVIDERS_DIR
+
+import properties
+from providers.provider import Provider
 
 class Core:
 
 
-    def __init__(self, address='0.0.0.0', port=5999):
+    def __init__(self, address=properties.ADDRESS, port=properties.PORT):
         self.address = address
         self.port = port
 
@@ -25,16 +27,19 @@ class Core:
         app.run(host=self.address, port=self.port)
 
     def handle_request(self, request):
-
-        return True
+        methods = {'play': self.play, 'stop': self.stop}
+        for action in request:
+            response = methods[action](request[action])
+            if response != 200:
+                return 500
+        return 200
 
     def play(self, notes):
         for space in notes["project"]:
             space = list(space.values())[0]  # looks like the most elegant way to get value
-            provider = space.pop("provider")
-            provider_module_path = PROVIDERS_DIR + '.' + provider
-            provider_module = importlib.import_module(provider_module_path)  # import provider as module
-            provider_module.run(space)
+            provider_name = space.pop("provider")
+            provider = Provider(provider_name).get_provider()
+            provider.run(space)
 
     def stop(self, instanses):
         pass
