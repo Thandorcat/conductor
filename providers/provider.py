@@ -8,4 +8,4 @@ class Provider:
         self.module = importlib.import_module(module_path) # import provider as module
 
     def get_provider(self):
-        return self.module
+        return self.module.Provider()
