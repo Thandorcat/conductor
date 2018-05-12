@@ -4,7 +4,7 @@ from docker.utils import ports
 
 class Provider:
 
-    ok_code=200
+    ok_code = 200
     resource_created_code=201
 
     def __init__(self):
@@ -15,7 +15,6 @@ class Provider:
     def handle_exception(fn):
         def wrapped(self, *args):
             try:
-                print(args)
                 return fn(self, *args)
             except Exception as e:
                 self.message += str(e)
@@ -26,12 +25,10 @@ class Provider:
     @handle_exception
     def run(self, options):
         self.message = ''
-        print(self.client.containers.list())
         location = options.pop("location")
         for service in options.values():
             image = service.get("image", None)
             port = (service.get("ports", None))[0]
-            print(image)
             container = self.client.containers.run(image, detach=True, ports=port)
             self.message += 'Container ' + container.short_id + ' started\n'
             return self.message, self.resource_created_code

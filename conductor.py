@@ -15,14 +15,14 @@ class Conductor_CLI:
     def handle_command(self, arguments):
         methods = {'play': self.play,
                    'stop': self.stop,
-                   'list': self.list}
+                   'list': self.list,
+                   'monitor': self.monitor}
         action = arguments[0]
         methods[action](arguments[1:])
 
     def send_request(self, action, data):
         message = {action: data}
         json_data = json.dumps(message)
-        print(json_data)
         request = requests.post(self.core_url, json=json_data)
         if self.code_ok(request.status_code):
             print('Success!')
@@ -57,8 +57,22 @@ class Conductor_CLI:
         notes = yaml.load(stream)
         self.send_request('play', notes)
 
+    def monitor(self, arguments):
+        commands = ['start','stop','status']
+        if arguments[0] not in commands:
+            metric = arguments[0]
+            value = arguments[1]
+            data = [{metric: value}]
+            self.send_request('monitor', data)
+        else:
+            command = arguments[0]
+            self.send_request('monitor', command)
+
 
 if __name__ == '__main__':
     cli = Conductor_CLI()
     arguments = sys.argv[1:]
+    if not arguments:
+        print("Please enter arguments")
+        exit(0)
     cli.handle_command(arguments)
