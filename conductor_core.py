@@ -1,7 +1,9 @@
 from flask import Flask, request, Response
 import json
 from monitor import Monitor
+from orcestrator import Orcestrator
 from multiprocessing import Process, Queue
+import uuid
 
 import properties
 from providers.provider import Provider
@@ -18,7 +20,10 @@ class Core:
         self.providers = {}
         self.metric_queue_in = Queue()
         self.metric_queue_out = Queue()
+        self.orcestrator_queue_in = Queue()
+        self.orcestrator_queue_out = Queue()
         self.monitor_process = self.create_monitor()
+        self.orcestrator_process = self.create_orcestrator()
 
     def start(self):
         app = Flask(__name__)
@@ -44,10 +49,16 @@ class Core:
 
 
     def create_monitor(self):
-        monitor = Monitor(self.metric_queue_in, self.metric_queue_out)
+        monitor = Monitor(self.metric_queue_in, self.metric_queue_out, self.orcestrator_queue_in)
         self.monitor_process = Process(target=monitor.run_monitor)
         self.monitor_process.start()
         return self.monitor_process
+
+    def create_orcestrator(self):
+        orcestrator = Orcestrator(self.orcestrator_queue_in, self.orcestrator_queue_out)
+        self.orcestrator_process = Process(target=orcestrator.run_orcestrator)
+        self.orcestrator_process.start()
+        return self.orcestrator_process
 
     def start_monitor(self):
         if self.monitor_process.is_alive():
@@ -78,10 +89,10 @@ class Core:
     def monitor_send_command(self, command):
         self.metric_queue_in.put(command)
 
-    def monitor_add_metrics(self, metrics):
+    def monitor_add_metrics(self, metrics, uuid):
         message = ''
         for metric in metrics:
-            self.metric_queue_in.put(metric)
+            self.metric_queue_in.put((metric, uuid))
             result, code = self.monitor_recieve_message()
             if self.code_ok(code):
                 message += result + '\n'
@@ -101,7 +112,7 @@ class Core:
             message += response
             if not self.code_ok(code):
                 return message, code
-        return response, self.ok_code
+        return message, self.ok_code
 
     def play(self, notes):
         message = ''
@@ -109,13 +120,16 @@ class Core:
             space = list(space.values())[0]  # looks like the most elegant way to get value
             provider_name = space.pop("provider")
             provider = self.get_provider(provider_name)
+            space['uuid'] = uuid.uuid4()
             response, code = provider.run(space)
             message += response
             if not self.code_ok(code):
                 return message, code
 
             if 'monitor' in space:
-                self.monitor_add_metrics(space['monitor'])
+                self.monitor_add_metrics((space['monitor'], space['uuid']))
+                self.orcestrator_queue_in.put(space['uuid'], {provider: space})
+
         return message, self.ok_code
 
     def code_ok(self, code):
@@ -150,7 +164,7 @@ class Core:
             return commands_methods[new_metric]()
         else:
             if self.monitor_process.is_alive():
-                message = self.monitor_add_metrics(new_metric)
+                message = self.monitor_add_metrics(new_metric, "manual")
                 return message
             else:
                 return 'Monitor is not running', self.error_code

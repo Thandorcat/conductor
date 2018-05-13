@@ -47,6 +47,10 @@ class Provider:
             return self.message, 200
 
     @handle_exception
+    def restart(self):
+        pass
+
+    @handle_exception
     def stop(self, container_ids):
         self.message = ''
         for container_id in container_ids.split(' '):
