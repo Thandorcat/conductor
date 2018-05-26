@@ -8,6 +8,7 @@ class Metric:
         self.port = int(port)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.name = 'listen_port'
+        self.display_name = 'Listen on port'
 
     def check(self):
         if self.ip:

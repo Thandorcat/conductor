@@ -34,6 +34,10 @@ class Provider:
             return self.message, self.resource_created_code
 
     @handle_exception
+    def restart(self, ):
+        pass
+
+    @handle_exception
     def list(self):
         self.message = ''
         containers = self.client.containers.list()

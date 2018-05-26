@@ -1,24 +1,22 @@
-version: '2'
-services:
-  application:
-    build:
-      context: .
-      dockerfile: application.Dockerfile
-  tomcat:
-    build:
-      context: .
-      dockerfile: tomcat.Dockerfile
-    depends_on:
-      - application
-    volumes_from:
-      - application
-  web:
-    build:
-      context: .
-      dockerfile: web.Dockerfile
-    depends_on:
-      - tomcat
-    ports:
-      - "80:80"
-    links:
-      - tomcat
+name: example.com
+project:
+  - space:
+      provider: docker
+      location: local
+      tomcat:
+        image: tomcat
+        ports:
+          - 80: 8080
+        mount:
+          - app:/usr/local/tomcat/webapps
+      database:
+        image: mysql
+        environment:
+          MYSQL_ROOT_PASSWORD: password
+        mount:
+          - mysql.conf:/etc/mysql/conf.d
+      monitor:
+          - listen_port: 80
+          - cpu_max: 90
+          - status: up
+

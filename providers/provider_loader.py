@@ -1,7 +1,7 @@
 import importlib
 import properties
 
-class Provider:
+class Provider_Loader:
     def __init__(self, module_name):
         self.module_name = module_name
         module_path = properties.PROVIDERS_DIR + '.' + self.module_name

@@ -6,7 +6,7 @@ from multiprocessing import Process, Queue
 import uuid
 
 import properties
-from providers.provider import Provider
+from providers.provider_loader import Provider_Loader
 
 
 class Core:
@@ -42,7 +42,7 @@ class Core:
         if provider_name in self.providers:
             return self.providers[provider_name]
         else:
-            provider_module = Provider(provider_name)
+            provider_module = Provider_Loader(provider_name)
             provider = provider_module.get_provider()
             self.providers[provider_name] = provider  # collects all providers in dictionary
             return provider
@@ -100,6 +100,9 @@ class Core:
                 message += "Error" + result + '\n'
         return message, self.ok_code
 
+    def orcestrator_add_instance(self, uuid, instance):
+        self.orcestrator_queue_in.put((uuid, instance))
+
 
     def handle_request(self, request):
         methods = {'play': self.play,
@@ -128,7 +131,7 @@ class Core:
 
             if 'monitor' in space:
                 self.monitor_add_metrics((space['monitor'], space['uuid']))
-                self.orcestrator_queue_in.put(space['uuid'], {provider: space})
+                self.orcestrator_add_instance(space['uuid'], {provider: space})
 
         return message, self.ok_code
 

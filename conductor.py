@@ -23,6 +23,7 @@ class Conductor_CLI:
     def send_request(self, action, data):
         message = {action: data}
         json_data = json.dumps(message)
+        print(json_data)
         request = requests.post(self.core_url, json=json_data)
         if self.code_ok(request.status_code):
             print('Success!')
@@ -67,6 +68,9 @@ class Conductor_CLI:
         else:
             command = arguments[0]
             self.send_request('monitor', command)
+
+    def orcestrator(self):
+        pass
 
 
 if __name__ == '__main__':

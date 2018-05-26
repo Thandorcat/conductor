@@ -76,6 +76,3 @@ class Monitor:
                     self.add_metric(request)
             except Exception as e:
                 self.check_metrics()
-
-
-

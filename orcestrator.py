@@ -17,16 +17,22 @@ class Orcestrator:
     def send_status(self):
         if self.logs:
             self.orcestrator_queue_out.put(self.logs)
-            self.logs = ''
+            self.clear_logs()
         else:
             message = "Everything was good."
             self.orcestrator_queue_out.put(message)
+
+    def clear_logs(self):
+        self.logs = ''
+
+    def save_to_logs(self, message):
+        self.logs += message
 
     def restart_instance(self, uuid):
         instance = self.instances[uuid]
         for provider in instance:
             provider.restart(instance[provider])
-        self.logs += "Space " + str(instance[provider]) + " was restarted."
+        self.save_to_logs("Space " + str(instance[provider]) + " was restarted!")
 
     def check_status(self, status):
         for uuid in status:
