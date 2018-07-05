@@ -8,7 +8,7 @@ class Metric:
         self.display_name = 'CPU usage'
 
     def check(self):
-        if psutil.cpu_percent() < self.load:
+        if self.value() < self.load:
             return True
         else:
             return False

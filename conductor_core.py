@@ -35,7 +35,7 @@ class Core:
             response, code = self.handle_request(request_data)
             return Response(response, status=code)
 
-        #app.debug = True
+        app.debug = True
         app.run(host=self.address, port=self.port)
 
     def get_provider(self, provider_name):
@@ -44,7 +44,7 @@ class Core:
         else:
             provider_module = Provider_Loader(provider_name)
             provider = provider_module.get_provider()
-            self.providers[provider_name] = provider  # collects all providers in dictionary
+            self.providers[provider_name] = provider
             return provider
 
 
@@ -108,7 +108,8 @@ class Core:
         methods = {'play': self.play,
                    'stop': self.stop,
                    'list': self.list,
-                   'monitor': self.monitor}
+                   'monitor': self.monitor,
+                   'orcestrator': self.orcestrator}
         message = ''
         for action in request:
             response, code = methods[action](request[action])
@@ -120,7 +121,7 @@ class Core:
     def play(self, notes):
         message = ''
         for space in notes["project"]:
-            space = list(space.values())[0]  # looks like the most elegant way to get value
+            space = list(space.values())[0]
             provider_name = space.pop("provider")
             provider = self.get_provider(provider_name)
             space['uuid'] = uuid.uuid4()
@@ -148,7 +149,7 @@ class Core:
     def list(self, providers):
         message = ''
         if providers == 'all':
-            providers_list = list(self.providers.values()) # get all later
+            providers_list = list(self.providers.values())
         else:
             providers_list = [self.get_provider(provider_name) for provider_name in providers]
         for provider in providers_list:
@@ -171,6 +172,20 @@ class Core:
                 return message
             else:
                 return 'Monitor is not running', self.error_code
+
+    def orcestrator(self, new_inctance):
+        commands = ['start', 'stop', 'status']
+        if new_inctance in commands:
+            commands_methods = {'start': self.start_monitor,
+                                'stop': self.stop_monitor,
+                                'status': self.monitor_status}
+            return commands_methods[new_inctance]()
+        else:
+            if self.monitor_process.is_alive():
+                message = self.monitor_add_metrics(new_inctance, "manual")
+                return message
+            else:
+                return 'Orcestrator is not running', self.error_code
 
 if __name__ == '__main__':
    core = Core()

@@ -15,8 +15,8 @@ project:
           MYSQL_ROOT_PASSWORD: password
         mount:
           - mysql.conf:/etc/mysql/conf.d
+      template: mysql
       monitor:
           - listen_port: 80
           - cpu_max: 90
           - status: up
-

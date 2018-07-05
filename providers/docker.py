@@ -28,14 +28,12 @@ class Provider:
         location = options.pop("location")
         for service in options.values():
             image = service.get("image", None)
-            port = (service.get("ports", None))[0]
-            container = self.client.containers.run(image, detach=True, ports=port)
+            port = service.get("ports", None)
+            volumes = service.get("mount", None)
+            environment = service.get("environment", None)
+            container = self.client.containers.run(image, detach=True, ports=port, volumes=volumes, environment=environment)
             self.message += 'Container ' + container.short_id + ' started\n'
             return self.message, self.resource_created_code
-
-    @handle_exception
-    def restart(self, ):
-        pass
 
     @handle_exception
     def list(self):

@@ -21,7 +21,7 @@ class Monitor:
             for metric_name in new_metric:
                 value = new_metric[metric_name]
                 metric_name = properties.METRICS_DIR + '.' + metric_name
-                module = importlib.import_module(metric_name)  # import provider as module
+                module = importlib.import_module(metric_name)
                 metric = module.Metric(value)
                 uuid_metrics = self.metrics.get(uuid, [])
                 uuid_metrics.append(metric)
@@ -38,7 +38,6 @@ class Monitor:
         self.metric_queue_out(self.metrics)
 
     def send_status(self):
-        # если есть value, то его, если нет, то чек
         message = ""
         try:
             for uuid in self.metrics:

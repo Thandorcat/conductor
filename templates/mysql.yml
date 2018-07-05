@@ -1,0 +1,6 @@
+mysql:
+  image: mysql
+  environment:
+    MYSQL_ROOT_PASSWORD: password
+  mount:
+    - mysql.conf:/etc/mysql/conf.d

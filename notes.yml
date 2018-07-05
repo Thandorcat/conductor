@@ -9,7 +9,3 @@ project:
           - 8080: 8080
         mount: # !!!!!!!
           - app:/usr/local/tomcat/webapps
-      monitor:
-          - listen_port: 8080
-          - cpu_max: 80
-          - status: up
